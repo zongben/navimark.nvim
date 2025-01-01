@@ -2,7 +2,7 @@
 
 An easy and powerful bookmark manager with telescope
 
-https://github.com/user-attachments/assets/f1549fbe-e4b0-4a90-9707-cbcc337cf449
+https://github.com/user-attachments/assets/4c0d3a0c-c911-40e9-8d0a-d70099a40e8c
 
 ## Features
 
