@@ -66,8 +66,9 @@ M.init = function(marks, ns_id)
 
 	sign.clear_signs()
 	for _, mark in ipairs(M.marks) do
-		if vim.api.nvim_buf_is_loaded(vim.fn.bufadd(mark.file)) then
-			sign.set_sign(vim.fn.bufadd(mark.file), mark.line)
+		local bufnr = vim.fn.bufadd(mark.file)
+		if vim.api.nvim_buf_is_loaded(bufnr) then
+			sign.set_sign(bufnr, mark.line)
 		end
 	end
 
@@ -90,15 +91,10 @@ end
 
 M.add_mark = function(pos)
 	local current_pos = pos
-	local found = vim.api.nvim_buf_get_extmarks(
-		current_pos.bufnr,
-		M.ns_id,
-		{ current_pos.line - 1, 0 },
-		{ current_pos.line - 1, 0 },
-		{}
-	)
-	if #found > 0 then
-		return
+	for _, mark in ipairs(M.marks) do
+		if mark.file == current_pos.file and mark.line == current_pos.line then
+			return
+		end
 	end
 	local mark_id = vim.api.nvim_buf_set_extmark(current_pos.bufnr, M.ns_id, current_pos.line - 1, 0, {})
 	sign.set_sign(current_pos.bufnr, current_pos.line)
@@ -126,12 +122,13 @@ M.remove_mark = function(pos)
 end
 
 M.toggle_mark = function(pos)
-	local found = vim.api.nvim_buf_get_extmarks(pos.bufnr, M.ns_id, { pos.line - 1, 0 }, { pos.line - 1, 0 }, {})
-	if #found == 0 then
-		M.add_mark(pos)
-	else
-		M.remove_mark(pos)
+	for _, mark in ipairs(M.marks) do
+		if mark.file == pos.file and mark.line == pos.line then
+			M.remove_mark(pos)
+			return
+		end
 	end
+	M.add_mark(pos)
 end
 
 M.goto_mark = function(current_mark_index)
