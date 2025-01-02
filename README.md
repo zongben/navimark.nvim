@@ -8,7 +8,7 @@ https://github.com/user-attachments/assets/4c0d3a0c-c911-40e9-8d0a-d70099a40e8c
 
 - Displays a bookmark sign wherever you set it
 - Bookmarks are scoped by different stacks
-- Uses telescope to search and preview bookmarks
+- Uses telescope to preview and navigate bookmarks
 - Allows bookmarks to be persisted
 
 ## Installation
