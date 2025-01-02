@@ -13,6 +13,7 @@ M.defaults = {
     telescope = {
       n = {
         delete_mark = "d",
+        clear_marks = "c",
         new_stack = "n",
         next_stack = "<Tab>",
         prev_stack = "<S-Tab>",

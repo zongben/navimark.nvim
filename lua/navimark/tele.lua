@@ -100,4 +100,9 @@ M.delete_stack = function()
   new_picker()
 end
 
+M.clear_marks = function()
+  stack.clear_marks()
+  new_picker()
+end
+
 return M

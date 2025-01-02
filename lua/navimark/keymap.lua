@@ -36,6 +36,7 @@ M.tele_init = function()
     tele_map("n", telescope.n.prev_stack, tele.prev_stack)
     tele_map("n", telescope.n.rename_stack, tele.rename_stack)
     tele_map("n", telescope.n.delete_stack, tele.delete_stack)
+    tele_map("n", telescope.n.clear_marks, tele.clear_marks)
   end
 end
 

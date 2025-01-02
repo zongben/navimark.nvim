@@ -144,4 +144,10 @@ M.delete_stack = function()
   try_save()
 end
 
+M.clear_marks = function()
+  M.stacks[currnet_stack_index].marks = {}
+  loadstack(currnet_stack_index)
+  try_save()
+end
+
 return M
