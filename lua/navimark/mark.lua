@@ -3,17 +3,17 @@ local sign = require("navimark.sign")
 local M = {}
 
 M.current_mark_index = 1
-
 M.marks = {}
-
 M.ns_id = 0
 
 local update_marks = function(bufnr, handler)
   for i = #M.marks, 1, -1 do
     local mark = M.marks[i]
-    local extmark = vim.api.nvim_buf_get_extmark_by_id(bufnr, M.ns_id, mark.mark_id, {})
-    if #extmark > 0 then
-      handler(i, mark, extmark)
+    if bufnr == vim.fn.bufadd(mark.file) then
+      local extmark = vim.api.nvim_buf_get_extmark_by_id(bufnr, M.ns_id, mark.mark_id, {})
+      if #extmark > 0 then
+        handler(i, mark, extmark)
+      end
     end
   end
 end
@@ -30,13 +30,12 @@ end
 
 local buf_list = {}
 local buf_attch = function(bufnr)
-  for _, buf in ipairs(buf_list) do
-    if buf == bufnr then
-      return nil
-    end
+  if buf_list[bufnr] then
+    return
   end
   vim.api.nvim_buf_attach(bufnr, false, {
     on_lines = function(_, _, _, firstline, lastline, new_lastline)
+      buf_list[bufnr] = true
       local line_detect = detect_line_change(lastline, new_lastline)
       if line_detect == "delete" then
         update_marks(bufnr, function(i, mark, _)
@@ -47,15 +46,10 @@ local buf_attch = function(bufnr)
         end)
       end
     end,
-    on_detach = function(_, b)
-      for i = #buf_list, 1, -1 do
-        if buf_list[i] == b then
-          table.remove(buf_list, i)
-        end
-      end
+    on_detach = function()
+      buf_list[bufnr] = nil
     end,
   })
-  table.insert(buf_list, bufnr)
   return 0
 end
 
@@ -76,9 +70,7 @@ M.init = function(marks, ns_id)
     pattern = "*",
     callback = function(handler)
       local bufnr = handler.buf
-      if buf_attch(bufnr) == nil then
-        return
-      end
+      buf_attch(bufnr)
       for _, mark in ipairs(M.marks) do
         if mark.file == vim.api.nvim_buf_get_name(bufnr) then
           vim.api.nvim_buf_set_extmark(bufnr, M.ns_id, mark.line - 1, 0, {})
@@ -134,12 +126,12 @@ end
 M.goto_mark = function(current_mark_index)
   local mark = M.marks[current_mark_index]
   if not mark then
-    vim.notify("BookMark not found", 1)
+    vim.notify("BookMark not found")
     return
   end
 
   if vim.fn.filereadable(mark.file) ~= 1 then
-    vim.notify("File not found", 1)
+    vim.notify("File not found")
     return
   end
 

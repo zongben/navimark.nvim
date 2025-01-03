@@ -26,8 +26,10 @@ local get_ns_id = function()
 end
 
 local loadstack = function(index)
-  currnet_stack_index = index
-  mark.init(M.stacks[currnet_stack_index].marks, get_ns_id())
+  vim.schedule(function()
+    currnet_stack_index = index
+    mark.init(M.stacks[currnet_stack_index].marks, get_ns_id())
+  end)
 end
 
 local get_current_pos = function()

@@ -3,10 +3,11 @@ local pickers = require("telescope.pickers")
 local finders = require("telescope.finders")
 local previewers = require("telescope.previewers")
 local action_state = require("telescope.actions.state")
+local actions = require("telescope.actions")
 
 local M = {}
 
-M.attach_mappings = nil
+M.picker_mappings = nil
 
 local picker = {}
 
@@ -52,8 +53,14 @@ local new_picker = function()
     }),
     previewer = previewer,
     attach_mappings = function(_, map)
-      if M.attach_mappings then
-        M.attach_mappings(map)
+      actions.select_default:replace(function(prompt_bufnr)
+        local selection = action_state.get_selected_entry()
+        actions.close(prompt_bufnr)
+        vim.api.nvim_command("edit " .. selection.value.file)
+        vim.api.nvim_win_set_cursor(0, { selection.value.line, 0 })
+      end)
+      if M.picker_mappings then
+        M.picker_mappings(map)
       end
       return true
     end,
@@ -63,9 +70,6 @@ end
 
 M.delete_mark = function()
   local selection = action_state.get_selected_entry()
-  if not selection then
-    return
-  end
   local pos = entry_to_pos(selection.value)
   stack.delete_mark(pos)
   new_picker()

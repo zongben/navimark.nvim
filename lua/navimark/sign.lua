@@ -24,7 +24,9 @@ M.remove_sign = function(bufnr, line)
 
   if #place > 0 then
     if #place[1].signs > 0 then
-      vim.fn.sign_unplace(group_name, { buffer = bufnr, id = place[1].signs[1].id })
+      for _, sign in ipairs(place[1].signs) do
+        vim.fn.sign_unplace(group_name, { buffer = bufnr, id = sign.id })
+      end
     end
   end
 end

@@ -28,7 +28,7 @@ M.base_init = function()
 end
 
 M.tele_init = function()
-  tele.attach_mappings = function(tele_map)
+  tele.picker_mappings = function(tele_map)
     local telescope = M.keymap.telescope
     tele_map("n", telescope.n.delete_mark, tele.delete_mark)
     tele_map("n", telescope.n.new_stack, tele.new_stack)
