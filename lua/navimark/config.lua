@@ -6,8 +6,8 @@ M.defaults = {
       mark_toggle = "<leader>mm",
       mark_add = "<leader>ma",
       mark_remove = "<leader>mr",
-      goto_next_mark = "<leader>mn",
-      goto_prev_mark = "<leader>mp",
+      goto_next_mark = "]m",
+      goto_prev_mark = "[m",
       open_mark_picker = "<leader>fm",
     },
     telescope = {
