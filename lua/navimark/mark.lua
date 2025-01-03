@@ -29,9 +29,9 @@ local detect_line_change = function(lastline, new_lastline)
 end
 
 local buf_list = {}
-local buf_attch = function(bufnr)
+local buf_attched = function(bufnr)
   if buf_list[bufnr] then
-    return
+    return 1
   end
   vim.api.nvim_buf_attach(bufnr, false, {
     on_lines = function(_, _, _, firstline, lastline, new_lastline)
@@ -70,7 +70,9 @@ M.init = function(marks, ns_id)
     pattern = "*",
     callback = function(handler)
       local bufnr = handler.buf
-      buf_attch(bufnr)
+      if buf_attched(bufnr) == 1 then
+        return
+      end
       for _, mark in ipairs(M.marks) do
         if mark.file == vim.api.nvim_buf_get_name(bufnr) then
           vim.api.nvim_buf_set_extmark(bufnr, M.ns_id, mark.line - 1, 0, {})
