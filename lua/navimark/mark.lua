@@ -6,6 +6,8 @@ M.current_mark_index = 1
 M.marks = {}
 M.ns_id = 0
 
+local _try_save = nil
+
 local update_marks = function(bufnr, handler)
   for i = #M.marks, 1, -1 do
     local mark = M.marks[i]
@@ -15,6 +17,9 @@ local update_marks = function(bufnr, handler)
         handler(i, mark, extmark)
       end
     end
+  end
+  if _try_save then
+    _try_save()
   end
 end
 
@@ -53,7 +58,7 @@ local buf_attched = function(bufnr)
   return 0
 end
 
-M.init = function(marks, ns_id)
+M.init = function(marks, ns_id, try_save)
   M.marks = marks
   M.ns_id = ns_id
   M.current_mark_index = 1
@@ -81,6 +86,8 @@ M.init = function(marks, ns_id)
       end
     end,
   })
+
+  _try_save = try_save
 end
 
 M.add_mark = function(pos)

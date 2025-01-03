@@ -28,7 +28,7 @@ end
 local loadstack = function(index)
   vim.schedule(function()
     currnet_stack_index = index
-    mark.init(M.stacks[currnet_stack_index].marks, get_ns_id())
+    mark.init(M.stacks[currnet_stack_index].marks, get_ns_id(), try_save)
   end)
 end
 
