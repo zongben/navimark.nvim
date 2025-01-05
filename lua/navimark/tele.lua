@@ -68,11 +68,24 @@ local new_picker = function()
   picker:find()
 end
 
+local refresh_picker = function()
+  picker:refresh(finders.new_table({
+    results = stack.get_current_stack().marks,
+    entry_maker = function(entry)
+      return {
+        value = entry,
+        display = entry.file .. ":" .. entry.line,
+        ordinal = 1,
+      }
+    end,
+  }))
+end
+
 M.delete_mark = function()
   local selection = action_state.get_selected_entry()
   local pos = entry_to_pos(selection.value)
   stack.delete_mark(pos)
-  new_picker()
+  refresh_picker()
 end
 
 M.open_bookmark_picker = function()
@@ -106,7 +119,7 @@ end
 
 M.clear_marks = function()
   stack.clear_marks()
-  new_picker()
+  refresh_picker()
 end
 
 return M
