@@ -29,6 +29,15 @@ local previewer = previewers.new_buffer_previewer({
   end,
 })
 
+local display_name = function(file, line)
+  -- local cwd = string.lower(vim.fn.getcwd())
+  -- local lower_path = string.lower(file)
+  -- if string.find(lower_path, cwd, 1, true) == 1 then
+  --   return string.sub(file, string.len(cwd) + 2) .. ":" .. line
+  -- end
+  return file .. ":" .. line
+end
+
 local entry_to_pos = function(entry)
   return {
     file = entry.file,
@@ -46,7 +55,7 @@ local new_picker = function()
       entry_maker = function(entry)
         return {
           value = entry,
-          display = entry.file .. ":" .. entry.line,
+          display = display_name(entry.file, entry.line),
           ordinal = 1,
         }
       end,
@@ -74,7 +83,7 @@ local refresh_picker = function()
     entry_maker = function(entry)
       return {
         value = entry,
-        display = entry.file .. ":" .. entry.line,
+        display = display_name(entry.file, entry.line),
         ordinal = 1,
       }
     end,
