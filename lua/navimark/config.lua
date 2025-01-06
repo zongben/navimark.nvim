@@ -19,6 +19,7 @@ M.defaults = {
         prev_stack = "<S-Tab>",
         rename_stack = "r",
         delete_stack = "D",
+        open_all_marked_files = "<C-o>",
       },
     },
   },

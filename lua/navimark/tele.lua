@@ -97,6 +97,11 @@ M.delete_mark = function()
   refresh_picker()
 end
 
+M.clear_marks = function()
+  stack.clear_marks()
+  refresh_picker()
+end
+
 M.open_bookmark_picker = function()
   new_picker()
 end
@@ -126,9 +131,12 @@ M.delete_stack = function()
   new_picker()
 end
 
-M.clear_marks = function()
-  stack.clear_marks()
-  refresh_picker()
+M.open_all_marked_files = function()
+  local current_stack = stack.get_current_stack()
+  for _, mark in ipairs(current_stack.marks) do
+    vim.api.nvim_command("edit " .. mark.file)
+    vim.api.nvim_win_set_cursor(0, { mark.line, 0 })
+  end
 end
 
 return M
