@@ -50,6 +50,7 @@ The default configuration is as follows
         prev_stack = "<S-Tab>",
         rename_stack = "r",
         delete_stack = "D",
+        open_all_marked_files = "<C-o>", -- open all marked files in current stack
       },
     },
   },
