@@ -32,6 +32,7 @@ With lazy.nvim
 The default configuration is as follows
 ```lua
 {
+  --set "" to disable keymapping
   keymap = {
     base = {
       mark_toggle = "<leader>mm",
@@ -60,4 +61,16 @@ The default configuration is as follows
   },
   persist = false,
 }
+```
+
+## API
+
+You can use the following APIs to customize your config
+```lua
+local stack = require("navimark.stack")
+stack.mark_toggle()
+stack.mark_add()
+stack.mark_remove()
+stack.goto_next_mark()
+stack.goto_prev_mark()
 ```
