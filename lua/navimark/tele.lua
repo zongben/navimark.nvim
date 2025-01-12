@@ -102,7 +102,7 @@ M.clear_marks = function()
   refresh_picker()
 end
 
-M.open_bookmark_picker = function()
+M.open_mark_picker = function()
   new_picker()
 end
 
