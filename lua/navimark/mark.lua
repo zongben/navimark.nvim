@@ -90,7 +90,7 @@ M.init = function(marks, ns_id, try_save)
   _try_save = try_save
 end
 
-M.add_mark = function(pos)
+M.mark_add = function(pos)
   local current_pos = pos
   for _, mark in ipairs(M.marks) do
     if mark.file == current_pos.file and mark.line == current_pos.line then
@@ -107,7 +107,7 @@ M.add_mark = function(pos)
   M.current_mark_index = #M.marks
 end
 
-M.remove_mark = function(pos)
+M.mark_remove = function(pos)
   local current_pos = pos
   local removed_index = nil
   for i, mark in ipairs(M.marks) do
@@ -122,14 +122,14 @@ M.remove_mark = function(pos)
   M.current_mark_index = removed_index or M.current_mark_index
 end
 
-M.toggle_mark = function(pos)
+M.mark_toggle = function(pos)
   for _, mark in ipairs(M.marks) do
     if mark.file == pos.file and mark.line == pos.line then
-      M.remove_mark(pos)
+      M.mark_remove(pos)
       return
     end
   end
-  M.add_mark(pos)
+  M.mark_add(pos)
 end
 
 M.goto_mark = function(current_mark_index)

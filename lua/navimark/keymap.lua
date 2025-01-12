@@ -6,6 +6,9 @@ local M = {}
 M.keymap = {}
 
 local map = function(mode, key, cmd)
+  if key == "" then
+    return
+  end
   local opts = { noremap = true, silent = true }
   vim.keymap.set(mode, key, cmd, opts)
 end
@@ -18,13 +21,13 @@ end
 
 M.base_init = function()
   local base = M.keymap.base
-  map("n", base.mark_toggle, stack.bookmark_toggle)
-  map("n", base.mark_add, stack.bookmark_add)
-  map("n", base.mark_remove, stack.bookmark_remove)
+  map("n", base.mark_toggle, stack.mark_toggle)
+  map("n", base.mark_add, stack.mark_add)
+  map("n", base.mark_remove, stack.mark_remove)
   map("n", base.goto_next_mark, stack.goto_next_mark)
   map("n", base.goto_prev_mark, stack.goto_prev_mark)
 
-  map("n", base.open_mark_picker, tele.open_bookmark_picker)
+  map("n", base.open_mark_picker, tele.open_mark_picker)
 end
 
 M.tele_init = function()

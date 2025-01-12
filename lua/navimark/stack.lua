@@ -52,23 +52,23 @@ M.init = function(persist)
   loadstack(currnet_stack_index)
 end
 
-M.bookmark_toggle = function()
-  mark.toggle_mark(get_current_pos())
+M.mark_toggle = function()
+  mark.mark_toggle(get_current_pos())
   try_save()
 end
 
-M.bookmark_add = function()
-  mark.add_mark(get_current_pos())
+M.mark_add = function()
+  mark.mark_add(get_current_pos())
   try_save()
 end
 
-M.bookmark_remove = function()
-  mark.remove_mark(get_current_pos())
+M.mark_remove = function()
+  mark.mark_remove(get_current_pos())
   try_save()
 end
 
 M.delete_mark = function(pos)
-  mark.remove_mark(pos)
+  mark.mark_remove(pos)
   try_save()
 end
 
