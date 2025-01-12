@@ -6,6 +6,9 @@ local M = {}
 M.keymap = {}
 
 local map = function(mode, key, cmd)
+  if key == "" then
+    return
+  end
   local opts = { noremap = true, silent = true }
   vim.keymap.set(mode, key, cmd, opts)
 end
