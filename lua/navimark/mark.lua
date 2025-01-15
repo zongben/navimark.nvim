@@ -79,7 +79,7 @@ M.init = function(marks, ns_id, try_save)
         return
       end
       for _, mark in ipairs(M.marks) do
-        if mark.file == vim.api.nvim_buf_get_name(bufnr) then
+        if string.lower(mark.file) == string.lower(vim.api.nvim_buf_get_name(bufnr)) then
           vim.api.nvim_buf_set_extmark(bufnr, M.ns_id, mark.line - 1, 0, {})
           sign.set_sign(bufnr, mark.line)
         end
