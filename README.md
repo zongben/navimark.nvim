@@ -59,6 +59,7 @@ The default configuration is as follows
     text = "",
     color = "#FF0000",
   },
+  --set to true to persist marks
   persist = false,
 }
 ```
