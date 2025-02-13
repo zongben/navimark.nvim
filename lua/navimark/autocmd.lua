@@ -11,7 +11,7 @@ local detect_line_change = function(lastline, new_lastline)
   end
 end
 
-local buf_attched = function(bufnr)
+local buf_attach = function(bufnr)
   vim.api.nvim_buf_attach(bufnr, false, {
     on_lines = function(_, _, _, firstline, lastline, new_lastline)
       local line_detect = detect_line_change(lastline, new_lastline)
@@ -46,7 +46,7 @@ M.init = function()
       local bufnr = handler.buf
       if not vim.b.navimark_attached then
         vim.b.navimark_attached = true
-        buf_attched(bufnr)
+        buf_attach(bufnr)
       end
       for _, _mark in ipairs(mark.marks) do
         if string.lower(_mark.file) == string.lower(vim.api.nvim_buf_get_name(bufnr)) then
