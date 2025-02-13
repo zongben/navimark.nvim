@@ -31,8 +31,12 @@ M.remove_sign = function(bufnr, line)
   end
 end
 
-M.clear_signs = function()
-  vim.fn.sign_unplace(group_name)
+M.clear_signs = function(dict)
+  if dict then
+    vim.fn.sign_unplace(group_name, dict)
+  else
+    vim.fn.sign_unplace(group_name)
+  end
 end
 
 return M

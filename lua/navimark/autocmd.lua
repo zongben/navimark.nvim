@@ -1,6 +1,22 @@
 local mark = require("navimark.mark")
 local sign = require("navimark.sign")
 
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+
 local detect_line_change = function(lastline, new_lastline)
   if lastline == new_lastline then
     return "same"
@@ -44,10 +60,14 @@ M.init = function()
     pattern = "*",
     callback = function(handler)
       local bufnr = handler.buf
-      if not vim.b.navimark_attached then
-        vim.b.navimark_attached = true
-        buf_attach(bufnr)
+      buf_attach(bufnr)
+
+      local is_modified = vim.api.nvim_get_option_value("modified", { buf = bufnr })
+      if is_modified then
+        return
       end
+
+      sign.clear_signs({ buffer = bufnr })
       for _, _mark in ipairs(mark.marks) do
         if string.lower(_mark.file) == string.lower(vim.api.nvim_buf_get_name(bufnr)) then
           vim.api.nvim_buf_set_extmark(bufnr, mark.ns_id, _mark.line - 1, 0, {})
