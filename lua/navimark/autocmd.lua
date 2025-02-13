@@ -11,29 +11,21 @@ local detect_line_change = function(lastline, new_lastline)
   end
 end
 
-local buf_list = {}
 local buf_attched = function(bufnr)
-  if buf_list[bufnr] then
-    return 1
-  end
   vim.api.nvim_buf_attach(bufnr, false, {
     on_lines = function(_, _, _, firstline, lastline, new_lastline)
-      buf_list[bufnr] = true
       local line_detect = detect_line_change(lastline, new_lastline)
       if line_detect == "delete" then
         mark.update_marks(bufnr, function(i, _mark, _)
           if _mark.line >= firstline and _mark.line <= lastline then
             vim.api.nvim_buf_del_extmark(bufnr, mark.ns_id, _mark.mark_id)
+            sign.remove_sign(bufnr, _mark.line - 1)
             table.remove(mark.marks, i)
           end
         end)
       end
     end,
-    on_detach = function()
-      buf_list[bufnr] = nil
-    end,
   })
-  return 0
 end
 
 local M = {}
@@ -52,9 +44,10 @@ M.init = function()
     pattern = "*",
     callback = function(handler)
       local bufnr = handler.buf
-      -- if buf_attched(bufnr) == 1 then
-      --   return
-      -- end
+      if not vim.b.navimark_attached then
+        vim.b.navimark_attached = true
+        buf_attched(bufnr)
+      end
       for _, _mark in ipairs(mark.marks) do
         if string.lower(_mark.file) == string.lower(vim.api.nvim_buf_get_name(bufnr)) then
           vim.api.nvim_buf_set_extmark(bufnr, mark.ns_id, _mark.line - 1, 0, {})
