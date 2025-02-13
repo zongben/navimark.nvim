@@ -10,7 +10,7 @@ local persist_state
 M.stacks = {
   {
     id = uitl.generate_uuid(),
-    name = "default",
+    name = "stack",
     marks = {},
   },
 }
