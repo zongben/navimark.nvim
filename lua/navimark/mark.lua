@@ -23,6 +23,16 @@ M.init = function(marks, ns_id, try_save)
   _try_save = try_save
 end
 
+M.reload_buf_marks = function(bufnr)
+  sign.clear_signs({ buffer = bufnr })
+  for _, _mark in ipairs(M.marks) do
+    if string.lower(_mark.file) == string.lower(vim.api.nvim_buf_get_name(bufnr)) then
+      vim.api.nvim_buf_set_extmark(bufnr, M.ns_id, _mark.line - 1, 0, {})
+      sign.set_sign(bufnr, _mark.line)
+    end
+  end
+end
+
 M.update_marks = function(bufnr, handler)
   for i = #M.marks, 1, -1 do
     local mark = M.marks[i]
