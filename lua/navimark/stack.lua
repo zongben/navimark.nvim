@@ -41,13 +41,61 @@ local get_current_pos = function()
   }
 end
 
-M.init = function(persist)
+local init_stack_auto_mode = function()
+  vim.api.nvim_create_autocmd({ "LspAttach" }, {
+    pattern = "*",
+    callback = function(handler)
+      local bufnr = handler.buf
+      local clients = vim.lsp.get_clients({
+        bufnr = bufnr,
+      })
+
+      local cwd = vim.fn.getcwd()
+      for _, client in ipairs(clients) do
+        local root_dir = client.root_dir
+        if root_dir and cwd == root_dir then
+          if M.stacks[currnet_stack_index].root_dir == root_dir then
+            return
+          end
+
+          local repo_name = vim.fn.fnamemodify(root_dir, ":t")
+          local founded = false
+          for i, stack in ipairs(M.stacks) do
+            if stack.root_dir == root_dir then
+              founded = true
+              currnet_stack_index = i
+              loadstack(currnet_stack_index)
+            end
+          end
+
+          if not founded then
+            table.insert(M.stacks, {
+              id = uitl.generate_uuid(),
+              name = repo_name,
+              root_dir = root_dir,
+              marks = {},
+            })
+            currnet_stack_index = #M.stacks
+            loadstack(currnet_stack_index)
+          end
+
+          vim.notify("Stack for " .. repo_name .. " is autoloaded")
+        end
+      end
+    end,
+  })
+end
+
+M.init = function(persist, stack_mode)
   persist_state = persist
   if persist_state then
     local loaded_stacks = persistence.load()
     if loaded_stacks ~= nil then
       M.stacks = loaded_stacks
     end
+  end
+  if stack_mode == "auto" then
+    init_stack_auto_mode()
   end
   loadstack(currnet_stack_index)
 end

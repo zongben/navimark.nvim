@@ -28,6 +28,7 @@ M.defaults = {
     color = "#FF0000",
   },
   persist = false,
+  stack_mode = "manual",
 }
 
 return M

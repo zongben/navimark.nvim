@@ -30,11 +30,6 @@ local previewer = previewers.new_buffer_previewer({
 })
 
 local display_name = function(file, line)
-  -- local cwd = string.lower(vim.fn.getcwd())
-  -- local lower_path = string.lower(file)
-  -- if string.find(lower_path, cwd, 1, true) == 1 then
-  --   return string.sub(file, string.len(cwd) + 2) .. ":" .. line
-  -- end
   return file .. ":" .. line
 end
 

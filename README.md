@@ -10,6 +10,7 @@ https://github.com/user-attachments/assets/4c0d3a0c-c911-40e9-8d0a-d70099a40e8c
 - Bookmarks are scoped by different stacks
 - Uses telescope to preview and navigate bookmarks
 - Allows bookmarks to be persisted
+- **(NEW)** When LSP attached, stack will be autoloaded and named based on the current repository
 
 ## Installation
 
@@ -51,7 +52,8 @@ The default configuration is as follows
         prev_stack = "<S-Tab>",
         rename_stack = "r",
         delete_stack = "D",
-        open_all_marked_files = "<C-o>", -- open all marked files in current stack
+        -- open all marked files in current stack
+        open_all_marked_files = "<C-o>", 
       },
     },
   },
@@ -61,6 +63,11 @@ The default configuration is as follows
   },
   --set to true to persist marks
   persist = false,
+
+  --options: manual || auto
+  --auto: when LSP attached, stack will be autoloaded and named based on the current repository
+  --manual: manage stacks manually
+  stack_mode = "manual",
 }
 ```
 
