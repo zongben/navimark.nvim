@@ -81,4 +81,7 @@ stack.mark_add()
 stack.mark_remove()
 stack.goto_next_mark()
 stack.goto_prev_mark()
+
+local tele = require("navimark.tele")
+tele.open_mark_picker()
 ```
