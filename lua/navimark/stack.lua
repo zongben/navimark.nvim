@@ -1,5 +1,5 @@
 local mark = require("navimark.mark")
-local uitls = require("navimark.utils")
+local utils = require("navimark.utils")
 local persistence = require("navimark.persistence")
 
 local M = {}
@@ -9,7 +9,7 @@ local persist_state
 
 M.stacks = {
   {
-    id = uitls.generate_uuid(),
+    id = utils.generate_uuid(),
     name = "stack",
     marks = {},
   },
@@ -74,7 +74,7 @@ local init_stack_auto_mode = function()
 
           if not founded then
             table.insert(M.stacks, {
-              id = uitls.generate_uuid(),
+              id = utils.generate_uuid(),
               name = repo_name,
               root_dir = root_dir,
               marks = {},
@@ -151,7 +151,7 @@ M.new_stack = function()
     return
   end
   table.insert(M.stacks, {
-    id = uitls.generate_uuid(),
+    id = utils.generate_uuid(),
     name = name,
     marks = {},
   })
