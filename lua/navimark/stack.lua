@@ -1,5 +1,5 @@
 local mark = require("navimark.mark")
-local uitl = require("navimark.util")
+local uitls = require("navimark.utils")
 local persistence = require("navimark.persistence")
 
 local M = {}
@@ -9,7 +9,7 @@ local persist_state
 
 M.stacks = {
   {
-    id = uitl.generate_uuid(),
+    id = uitls.generate_uuid(),
     name = "stack",
     marks = {},
   },
@@ -50,10 +50,14 @@ local init_stack_auto_mode = function()
         bufnr = bufnr,
       })
 
-      local cwd = vim.fn.getcwd()
+      local cwd = utils.correct_path(vim.fn.getcwd())
       for _, client in ipairs(clients) do
         local root_dir = client.root_dir
-        if root_dir and cwd == root_dir then
+        if root_dir == nil then
+          return
+        end
+
+        if cwd == utils.correct_path(root_dir) then
           if M.stacks[currnet_stack_index].root_dir == root_dir then
             return
           end
@@ -70,7 +74,7 @@ local init_stack_auto_mode = function()
 
           if not founded then
             table.insert(M.stacks, {
-              id = uitl.generate_uuid(),
+              id = uitls.generate_uuid(),
               name = repo_name,
               root_dir = root_dir,
               marks = {},
@@ -147,7 +151,7 @@ M.new_stack = function()
     return
   end
   table.insert(M.stacks, {
-    id = uitl.generate_uuid(),
+    id = uitls.generate_uuid(),
     name = name,
     marks = {},
   })
