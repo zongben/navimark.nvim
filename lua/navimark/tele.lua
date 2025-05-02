@@ -10,6 +10,7 @@ local M = {}
 M.picker_mappings = nil
 
 local picker = {}
+local ns = vim.api.nvim_create_namespace("navimark_highlight")
 
 local previewer = previewers.new_buffer_previewer({
   title = "Preview",
@@ -24,7 +25,7 @@ local previewer = previewers.new_buffer_previewer({
 
     vim.schedule(function()
       vim.api.nvim_win_set_cursor(self.state.winid, { entry.value.line, 0 })
-      vim.api.nvim_buf_add_highlight(self.state.bufnr, -1, "TelescopeSelection", entry.value.line - 1, 0, -1)
+      vim.hl.range(self.state.bufnr, ns, "TelescopeSelection", { entry.value.line - 1, 0 }, { entry.value.line - 1, -1 })
     end)
   end,
 })
