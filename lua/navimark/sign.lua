@@ -3,7 +3,7 @@ local hl_name = "navimark_hl"
 
 local M = {}
 
-local sign_text = ""
+local sign_text = ""
 
 M.init = function(sign_opt)
   vim.api.nvim_set_hl(0, hl_name, { fg = sign_opt.color })
