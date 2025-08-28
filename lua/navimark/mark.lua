@@ -1,4 +1,5 @@
 local sign = require("navimark.sign")
+local utils = require("navimark.utils")
 
 local M = {}
 
@@ -23,9 +24,9 @@ M.init = function(marks, ns_id, try_save)
   _try_save = try_save
 end
 
-M.reload_buf_marks = function(bufnr)
+M.reload_buf_marks = function(bufnr, marks)
   sign.clear_signs({ buffer = bufnr })
-  for _, _mark in ipairs(M.marks) do
+  for _, _mark in ipairs(marks) do
     if string.lower(_mark.file) == string.lower(vim.api.nvim_buf_get_name(bufnr)) then
       vim.api.nvim_buf_set_extmark(bufnr, M.ns_id, _mark.line - 1, 0, {})
       sign.set_sign(bufnr, _mark.line)
@@ -33,13 +34,15 @@ M.reload_buf_marks = function(bufnr)
   end
 end
 
-M.update_marks = function(bufnr, handler)
-  for i = #M.marks, 1, -1 do
-    local mark = M.marks[i]
-    if bufnr == vim.fn.bufadd(mark.file) then
-      local extmark = vim.api.nvim_buf_get_extmark_by_id(bufnr, M.ns_id, mark.mark_id, {})
-      if #extmark > 0 then
-        handler(i, mark, extmark)
+M.update_marks = function(bufnr, marks, handler)
+  if marks then
+    for i = #marks, 1, -1 do
+      local mark = marks[i]
+      if bufnr == vim.fn.bufadd(mark.file) then
+        local extmark = vim.api.nvim_buf_get_extmark_by_id(bufnr, M.ns_id, mark.mark_id, {})
+        if handler and #extmark > 0 then
+          handler(i, mark, extmark)
+        end
       end
     end
   end
@@ -50,6 +53,11 @@ end
 
 M.mark_add = function(pos)
   local current_pos = pos
+  if utils.is_buf_modifying(current_pos.bufnr) then
+    vim.notify("Can't add mark when file is modifying")
+    return
+  end
+
   for _, mark in ipairs(M.marks) do
     if mark.file == current_pos.file and mark.line == current_pos.line then
       return
@@ -67,6 +75,11 @@ end
 
 M.mark_remove = function(pos)
   local current_pos = pos
+  if utils.is_buf_modifying(current_pos.bufnr) then
+    vim.notify("Can't remove mark when file is modifying")
+    return
+  end
+
   local removed_index = nil
   for i, mark in ipairs(M.marks) do
     if mark.file == current_pos.file and mark.line == current_pos.line then

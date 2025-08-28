@@ -29,4 +29,8 @@ M.correct_path = function(path)
   end
 end
 
+M.is_buf_modifying = function(bufnr)
+  return vim.api.nvim_get_option_value("modified", { buf = bufnr })
+end
+
 return M
