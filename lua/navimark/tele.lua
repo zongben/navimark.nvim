@@ -25,7 +25,13 @@ local previewer = previewers.new_buffer_previewer({
 
     vim.schedule(function()
       vim.api.nvim_win_set_cursor(self.state.winid, { entry.value.line, 0 })
-      vim.hl.range(self.state.bufnr, ns, "TelescopeSelection", { entry.value.line - 1, 0 }, { entry.value.line - 1, -1 })
+      vim.hl.range(
+        self.state.bufnr,
+        ns,
+        "TelescopeSelection",
+        { entry.value.line - 1, 0 },
+        { entry.value.line - 1, -1 }
+      )
     end)
   end,
 })
@@ -103,7 +109,8 @@ M.open_mark_picker = function()
 end
 
 M.new_stack = function()
-  stack.new_stack()
+  local name = vim.fn.input("Enter name for new stack: ")
+  stack.new_stack(name)
   M.next_stack()
 end
 
@@ -118,7 +125,8 @@ M.prev_stack = function()
 end
 
 M.rename_stack = function()
-  stack.rename_stack()
+  local name = vim.fn.input("Enter new name for stack: ", stack.get_current_stack().name)
+  stack.rename_stack(name)
   new_picker()
 end
 

@@ -144,13 +144,16 @@ M.goto_prev_mark = function()
   mark.goto_mark(mark.current_mark_index)
 end
 
-M.new_stack = function()
-  local name = vim.fn.input("Enter name for new stack: ")
+M.new_stack = function(name)
   if name == "" then
     vim.notify("Name can't be empty")
     return
   end
-  table.insert(M.stacks, {
+  local pos = currnet_stack_index + 1
+  if pos > #M.stacks then
+    pos = 1
+  end
+  table.insert(M.stacks, pos, {
     id = utils.generate_uuid(),
     name = name,
     marks = {},
@@ -158,8 +161,7 @@ M.new_stack = function()
   try_save()
 end
 
-M.rename_stack = function()
-  local name = vim.fn.input("Enter new name for stack: ", M.stacks[currnet_stack_index].name)
+M.rename_stack = function(name)
   if name == "" then
     vim.notify("Name can't be empty")
     return
