@@ -1,4 +1,3 @@
-local sign = require("navimark.sign")
 local utils = require("navimark.utils")
 
 local M = {}
@@ -7,37 +6,55 @@ M.current_mark_index = 1
 M.marks = {}
 M.ns_id = 0
 
+local group_name = "navimark_hl_group"
+
+local extmark_options = {
+  sign_hl_group = group_name,
+  undo_restore = false,
+}
+
 local _try_save = nil
 
-M.init = function(marks, ns_id, try_save)
+M.init = function(sign_options)
+  extmark_options.sign_text = sign_options.text
+  vim.api.nvim_set_hl(M.ns_id, group_name, { fg = sign_options.color })
+end
+
+M.load = function(marks, ns_id, try_save)
   M.marks = marks
   M.ns_id = ns_id
   M.current_mark_index = 1
 
-  sign.clear_signs()
-  for _, mark in ipairs(M.marks) do
-    local bufnr = vim.fn.bufadd(mark.file)
-    if vim.api.nvim_buf_is_loaded(bufnr) then
-      sign.set_sign(bufnr, mark.line)
-    end
-  end
   _try_save = try_save
 end
 
-M.reload_buf_marks = function(bufnr, marks)
-  sign.clear_signs({ buffer = bufnr })
-  for _, _mark in ipairs(marks) do
-    if string.lower(_mark.file) == string.lower(vim.api.nvim_buf_get_name(bufnr)) then
-      vim.api.nvim_buf_set_extmark(bufnr, M.ns_id, _mark.line - 1, 0, {})
-      sign.set_sign(bufnr, _mark.line)
+M.reload_buf_marks = function(bufnr)
+  for _, mark in ipairs(M.marks) do
+    if mark.file:lower() == vim.api.nvim_buf_get_name(bufnr):lower() then
+      vim.api.nvim_buf_del_extmark(bufnr, M.ns_id, mark.mark_id)
+      local id = vim.api.nvim_buf_set_extmark(bufnr, M.ns_id, mark.line - 1, 0, extmark_options)
+      mark.mark_id = id
+    end
+  end
+
+  if _try_save then
+    _try_save()
+  end
+end
+
+M.clear_all_marks = function()
+  for _, mark in ipairs(M.marks) do
+    local bufnr = vim.fn.bufadd(mark.file)
+    if vim.api.nvim_buf_is_loaded(bufnr) then
+      vim.api.nvim_buf_del_extmark(bufnr, M.ns_id, mark.mark_id)
     end
   end
 end
 
-M.update_marks = function(bufnr, marks, handler)
-  if marks then
-    for i = #marks, 1, -1 do
-      local mark = marks[i]
+M.update_marks = function(bufnr, handler)
+  if M.marks then
+    for i = #M.marks, 1, -1 do
+      local mark = M.marks[i]
       if bufnr == vim.fn.bufadd(mark.file) then
         local extmark = vim.api.nvim_buf_get_extmark_by_id(bufnr, M.ns_id, mark.mark_id, {})
         if handler and #extmark > 0 then
@@ -63,8 +80,8 @@ M.mark_add = function(pos)
       return
     end
   end
-  local mark_id = vim.api.nvim_buf_set_extmark(current_pos.bufnr, M.ns_id, current_pos.line - 1, 0, {})
-  sign.set_sign(current_pos.bufnr, current_pos.line)
+
+  local mark_id = vim.api.nvim_buf_set_extmark(current_pos.bufnr, M.ns_id, current_pos.line - 1, 0, extmark_options)
   table.insert(M.marks, {
     file = current_pos.file,
     line = current_pos.line,
@@ -84,7 +101,6 @@ M.mark_remove = function(pos)
   for i, mark in ipairs(M.marks) do
     if mark.file == current_pos.file and mark.line == current_pos.line then
       vim.api.nvim_buf_del_extmark(current_pos.bufnr, M.ns_id, mark.mark_id)
-      sign.remove_sign(current_pos.bufnr, current_pos.line)
       table.remove(M.marks, i)
       removed_index = i
       break

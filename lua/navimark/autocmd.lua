@@ -9,11 +9,11 @@ M.init = function()
     callback = function(args)
       local bufnr = args.buf
 
-      mark.update_marks(bufnr, mark.marks, function(_, _mark, _extmark)
+      mark.update_marks(bufnr, function(_, _mark, _extmark)
         _mark.line = _extmark[1] + 1
       end)
 
-      mark.reload_buf_marks(bufnr, mark.marks)
+      mark.reload_buf_marks(bufnr)
     end,
   })
 
@@ -26,7 +26,7 @@ M.init = function()
         return
       end
 
-      mark.reload_buf_marks(bufnr, mark.marks)
+      mark.reload_buf_marks(bufnr)
     end,
   })
 end
