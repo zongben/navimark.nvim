@@ -3,6 +3,7 @@ local keymap = require("navimark.keymap")
 local stack = require("navimark.stack")
 local option_validator = require("navimark.option_validator")
 local mark = require("navimark.mark")
+local cmd = require("navimark.cmd")
 
 local M = {}
 
@@ -12,6 +13,7 @@ M.setup = function(opts)
   keymap.init(M.options.keymap)
   mark.init(M.options.sign)
   stack.init(M.options.persist, M.options.stack_mode)
+  cmd.init()
 end
 
 return M

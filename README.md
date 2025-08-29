@@ -10,7 +10,7 @@ https://github.com/user-attachments/assets/4c0d3a0c-c911-40e9-8d0a-d70099a40e8c
 - Bookmarks are scoped by different stacks
 - Uses telescope to preview and navigate bookmarks
 - Allows bookmarks to be persisted
-- **(NEW)** When LSP attached, stack will be autoloaded and named based on the current repository
+- **(NEW)** When the cwd changes, if a stack has the same root_dir as the cwd, that stack will be loaded automatically
 
 ## Installation
 
@@ -65,7 +65,7 @@ The default configuration is as follows
   persist = false,
 
   --options: manual || auto
-  --auto: when LSP attached, stack will be autoloaded and named based on the current repository
+  --auto: When the cwd changes, if a stack has the same root_dir as the cwd, that stack will be loaded automatically
   --manual: manage stacks manually
   stack_mode = "manual",
 }
@@ -81,6 +81,15 @@ stack.mark_add()
 stack.mark_remove()
 stack.goto_next_mark()
 stack.goto_prev_mark()
+
+--root_dir is optional
+stack.new_stack(name, root_dir)
+
+-- dir is optional. If not provided, the cwd will be used as the root_dir.
+-- If stack mode is set to auto, this enables autoloading
+-- when the cwd matches the stack's root_dir.
+-- or you can call :Navimark SaveRootDir to do the same function using cwd as root_dir.
+stack.save_root_dir(dir)
 
 local tele = require("navimark.tele")
 tele.open_mark_picker()

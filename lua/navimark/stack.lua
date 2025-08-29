@@ -41,55 +41,6 @@ local get_current_pos = function()
   }
 end
 
-local init_stack_auto_mode = function()
-  vim.api.nvim_create_autocmd({ "LspAttach" }, {
-    pattern = "*",
-    callback = function(handler)
-      local bufnr = handler.buf
-      local clients = vim.lsp.get_clients({
-        bufnr = bufnr,
-      })
-
-      local cwd = utils.correct_path(vim.fn.getcwd())
-      for _, client in ipairs(clients) do
-        local root_dir = client.root_dir
-        if root_dir == nil then
-          return
-        end
-
-        if cwd == utils.correct_path(root_dir) then
-          if M.stacks[currnet_stack_index].root_dir == root_dir then
-            return
-          end
-
-          local repo_name = vim.fn.fnamemodify(root_dir, ":t")
-          local founded = false
-          for i, stack in ipairs(M.stacks) do
-            if stack.root_dir == root_dir then
-              founded = true
-              currnet_stack_index = i
-              loadstack(currnet_stack_index)
-            end
-          end
-
-          if not founded then
-            table.insert(M.stacks, {
-              id = utils.generate_uuid(),
-              name = repo_name,
-              root_dir = root_dir,
-              marks = {},
-            })
-            currnet_stack_index = #M.stacks
-            loadstack(currnet_stack_index)
-          end
-
-          vim.notify("Stack for " .. repo_name .. " is autoloaded")
-        end
-      end
-    end,
-  })
-end
-
 M.init = function(persist, stack_mode)
   persist_state = persist
   if persist_state then
@@ -98,12 +49,24 @@ M.init = function(persist, stack_mode)
       M.stacks = loaded_stacks
     end
   end
-  if stack_mode == "auto" then
-    init_stack_auto_mode()
-  end
   loadstack(currnet_stack_index)
 
   autocmd.init(try_save)
+
+  if stack_mode == "auto" then
+    vim.api.nvim_create_autocmd("DirChanged", {
+      callback = function()
+        local cwd = vim.fn.getcwd()
+        for i, stack in ipairs(M.stacks) do
+          if stack.root_dir == cwd then
+            currnet_stack_index = i
+            loadstack(i)
+            break
+          end
+        end
+      end,
+    })
+  end
 end
 
 M.mark_toggle = function()
@@ -146,7 +109,20 @@ M.goto_prev_mark = function()
   mark.goto_mark(mark.current_mark_index)
 end
 
-M.new_stack = function(name)
+M.save_root_dir = function(path)
+  local cwd
+  if path then
+    cwd = path
+  else
+    cwd = vim.fn.getcwd()
+  end
+  local stack = M.get_current_stack()
+  stack.root_dir = cwd
+  vim.print(cwd)
+  try_save()
+end
+
+M.new_stack = function(name, root_dir)
   if name == "" then
     vim.notify("Name can't be empty")
     return
@@ -158,6 +134,7 @@ M.new_stack = function(name)
   table.insert(M.stacks, pos, {
     id = utils.generate_uuid(),
     name = name,
+    root_dir = root_dir,
     marks = {},
   })
   try_save()

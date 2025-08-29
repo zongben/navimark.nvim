@@ -9,26 +9,6 @@ M.generate_uuid = function()
   end)
 end
 
-M.get_os = function()
-  if vim.fn.has("win32") == 1 then
-    return "Windows"
-  elseif vim.fn.has("mac") == 1 then
-    return "macOS"
-  elseif vim.fn.has("unix") == 1 then
-    return "Linux"
-  else
-    return nil
-  end
-end
-
-M.correct_path = function(path)
-  if M.get_os() == "Windows" then
-    return string.gsub(path, "/", "\\")
-  else
-    return string.gsub(path, "\\", "/")
-  end
-end
-
 M.is_buf_modifying = function(bufnr)
   return vim.api.nvim_get_option_value("modified", { buf = bufnr })
 end
