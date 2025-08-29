@@ -43,20 +43,6 @@ M.clear_all_marks = function()
   end
 end
 
-M.update_marks = function(bufnr, handler)
-  if M.marks then
-    for i = #M.marks, 1, -1 do
-      local mark = M.marks[i]
-      if bufnr == vim.fn.bufadd(mark.file) then
-        local extmark = vim.api.nvim_buf_get_extmark_by_id(bufnr, M.ns_id, mark.mark_id, {})
-        if handler and #extmark > 0 then
-          handler(i, mark, extmark)
-        end
-      end
-    end
-  end
-end
-
 M.mark_add = function(pos)
   local current_pos = pos
   if utils.is_buf_modifying(current_pos.bufnr) then
