@@ -4,13 +4,11 @@ local finders = require("telescope.finders")
 local previewers = require("telescope.previewers")
 local action_state = require("telescope.actions.state")
 local actions = require("telescope.actions")
+local conf = require("telescope.config").values
 
 local M = {}
 
 M.picker_mappings = nil
-
-local picker = {}
-local ns = vim.api.nvim_create_namespace("navimark_highlight")
 
 local previewer = previewers.new_buffer_previewer({
   title = "Preview",
@@ -24,20 +22,27 @@ local previewer = previewers.new_buffer_previewer({
     end
 
     vim.schedule(function()
+      vim.api.nvim_set_option_value("cursorline", true, { win = self.state.winid })
       vim.api.nvim_win_set_cursor(self.state.winid, { entry.value.line, 0 })
-      vim.hl.range(
-        self.state.bufnr,
-        ns,
-        "TelescopeSelection",
-        { entry.value.line - 1, 0 },
-        { entry.value.line - 1, -1 }
-      )
     end)
   end,
 })
 
 local display_name = function(file, line)
   return file .. ":" .. line
+end
+
+local function create_finder(current_stack)
+  return finders.new_table({
+    results = current_stack.marks,
+    entry_maker = function(entry)
+      return {
+        display = display_name(entry.file, entry.line),
+        value = entry,
+        ordinal = entry.file .. entry.line,
+      }
+    end,
+  })
 end
 
 local entry_to_pos = function(entry)
@@ -50,58 +55,44 @@ end
 
 local new_picker = function()
   local current_stack = stack.get_current_stack()
-  picker = pickers.new({}, {
-    prompt_title = current_stack.name,
-    finder = finders.new_table({
-      results = current_stack.marks,
-      entry_maker = function(entry)
-        return {
-          value = entry,
-          display = display_name(entry.file, entry.line),
-          ordinal = 1,
-        }
+  pickers
+    .new({}, {
+      prompt_title = current_stack.name,
+      finder = create_finder(current_stack),
+      sorter = conf.generic_sorter({}),
+      previewer = previewer,
+      attach_mappings = function(_, map)
+        actions.select_default:replace(function(prompt_bufnr)
+          local selection = action_state.get_selected_entry()
+          actions.close(prompt_bufnr)
+          vim.api.nvim_command("edit " .. selection.value.file)
+          vim.api.nvim_win_set_cursor(0, { selection.value.line, 0 })
+        end)
+        if M.picker_mappings then
+          M.picker_mappings(map)
+        end
+        return true
       end,
-    }),
-    previewer = previewer,
-    attach_mappings = function(_, map)
-      actions.select_default:replace(function(prompt_bufnr)
-        local selection = action_state.get_selected_entry()
-        actions.close(prompt_bufnr)
-        vim.api.nvim_command("edit " .. selection.value.file)
-        vim.api.nvim_win_set_cursor(0, { selection.value.line, 0 })
-      end)
-      if M.picker_mappings then
-        M.picker_mappings(map)
-      end
-      return true
-    end,
-  })
-  picker:find()
+    })
+    :find()
 end
 
-local refresh_picker = function()
-  picker:refresh(finders.new_table({
-    results = stack.get_current_stack().marks,
-    entry_maker = function(entry)
-      return {
-        value = entry,
-        display = display_name(entry.file, entry.line),
-        ordinal = 1,
-      }
-    end,
-  }))
+local refresh_picker = function(prompt_bufnr)
+  local current_stack = stack.get_current_stack()
+  local finder = create_finder(current_stack)
+  action_state.get_current_picker(prompt_bufnr):refresh(finder)
 end
 
-M.delete_mark = function()
+M.delete_mark = function(prompt_bufnr)
   local selection = action_state.get_selected_entry()
   local pos = entry_to_pos(selection.value)
   stack.delete_mark(pos)
-  refresh_picker()
+  refresh_picker(prompt_bufnr)
 end
 
-M.clear_marks = function()
+M.clear_marks = function(prompt_bufnr)
   stack.clear_marks()
-  refresh_picker()
+  refresh_picker(prompt_bufnr)
 end
 
 M.open_mark_picker = function()
