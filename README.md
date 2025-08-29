@@ -61,7 +61,7 @@ The default configuration is as follows
     text = "",
     color = "#FF0000",
   },
-  --set to true to persist marks
+  --set to true to persist stacks and marks
   persist = false,
 
   --options: manual || auto
