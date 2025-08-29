@@ -13,19 +13,15 @@ local extmark_options = {
   undo_restore = false,
 }
 
-local _try_save = nil
-
 M.init = function(sign_options)
   extmark_options.sign_text = sign_options.text
   vim.api.nvim_set_hl(M.ns_id, group_name, { fg = sign_options.color })
 end
 
-M.load = function(marks, ns_id, try_save)
+M.load = function(marks, ns_id)
   M.marks = marks
   M.ns_id = ns_id
   M.current_mark_index = 1
-
-  _try_save = try_save
 end
 
 M.reload_buf_marks = function(bufnr)
@@ -35,10 +31,6 @@ M.reload_buf_marks = function(bufnr)
       local id = vim.api.nvim_buf_set_extmark(bufnr, M.ns_id, mark.line - 1, 0, extmark_options)
       mark.mark_id = id
     end
-  end
-
-  if _try_save then
-    _try_save()
   end
 end
 
@@ -62,9 +54,6 @@ M.update_marks = function(bufnr, handler)
         end
       end
     end
-  end
-  if _try_save then
-    _try_save()
   end
 end
 

@@ -3,7 +3,7 @@ local utils = require("navimark.utils")
 
 local M = {}
 
-M.init = function()
+M.init = function(try_save)
   vim.api.nvim_create_autocmd("BufWritePre", {
     pattern = "*",
     callback = function(args)
@@ -14,6 +14,8 @@ M.init = function()
       end)
 
       mark.reload_buf_marks(bufnr)
+
+      try_save()
     end,
   })
 
@@ -27,6 +29,8 @@ M.init = function()
       end
 
       mark.reload_buf_marks(bufnr)
+
+      try_save()
     end,
   })
 end

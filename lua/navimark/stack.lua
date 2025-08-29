@@ -1,6 +1,7 @@
 local mark = require("navimark.mark")
 local utils = require("navimark.utils")
 local persistence = require("navimark.persistence")
+local autocmd = require("navimark.autocmd")
 
 local M = {}
 
@@ -28,7 +29,7 @@ end
 local loadstack = function(index)
   mark.clear_all_marks()
   currnet_stack_index = index
-  mark.load(M.stacks[currnet_stack_index].marks, get_ns_id(), try_save)
+  mark.load(M.stacks[currnet_stack_index].marks, get_ns_id())
 end
 
 local get_current_pos = function()
@@ -101,6 +102,8 @@ M.init = function(persist, stack_mode)
     init_stack_auto_mode()
   end
   loadstack(currnet_stack_index)
+
+  autocmd.init(try_save)
 end
 
 M.mark_toggle = function()
