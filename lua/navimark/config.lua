@@ -14,10 +14,10 @@ M.defaults = {
       n = {
         delete_mark = "d",
         clear_marks = "c",
-        new_stack = "n",
+        new_stack = "N",
         next_stack = "<Tab>",
         prev_stack = "<S-Tab>",
-        rename_stack = "r",
+        rename_stack = "R",
         delete_stack = "D",
         open_all_marked_files = "<C-o>",
       },
