@@ -25,15 +25,25 @@ M.load = function(marks, ns_id)
 end
 
 M.reload_buf_marks = function(bufnr, handler)
-  for _, mark in ipairs(M.marks) do
+  local seen = {}
+  for i = #M.marks, 1, -1 do
+    local mark = M.marks[i]
+
     if bufnr == vim.fn.bufadd(mark.file) then
       if handler then
         handler(mark)
       end
 
       vim.api.nvim_buf_del_extmark(bufnr, M.ns_id, mark.mark_id)
-      local id = vim.api.nvim_buf_set_extmark(bufnr, M.ns_id, mark.line - 1, 0, extmark_options)
-      mark.mark_id = id
+
+      local key = mark.file .. ":" .. mark.line
+      if seen[key] then
+        table.remove(M.marks, i)
+      else
+        seen[key] = true
+        local id = vim.api.nvim_buf_set_extmark(bufnr, M.ns_id, mark.line - 1, 0, extmark_options)
+        mark.mark_id = id
+      end
     end
   end
 end
