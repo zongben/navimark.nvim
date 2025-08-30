@@ -15,6 +15,7 @@ https://github.com/user-attachments/assets/4c0d3a0c-c911-40e9-8d0a-d70099a40e8c
 ## Installation
 
 With lazy.nvim
+
 ```lua
 {
   "zongben/navimark.nvim",
@@ -31,6 +32,7 @@ With lazy.nvim
 ## Configuration
 
 The default configuration is as follows
+
 ```lua
 {
   --set "" to disable keymapping
@@ -74,6 +76,7 @@ The default configuration is as follows
 ## API
 
 You can use the following APIs to customize your config
+
 ```lua
 local stack = require("navimark.stack")
 stack.mark_toggle()
@@ -82,7 +85,7 @@ stack.mark_remove()
 stack.goto_next_mark()
 stack.goto_prev_mark()
 
---root_dir is optional
+--root_dir is optional. If not provided, stack root_dir will be nil
 stack.new_stack(name, root_dir)
 
 -- dir is optional. If not provided, the cwd will be used as the root_dir.
@@ -94,3 +97,44 @@ stack.save_root_dir(dir)
 local tele = require("navimark.tele")
 tele.open_mark_picker()
 ```
+
+## Tips
+
+I highly recommend using my other plugin [proot.nvim](https://github.com/zongben/proot.nvim)
+
+```lua
+{
+  "zongben/navimark.nvim",
+  config = function()
+    require("navimark").setup({
+      persist = true,
+      stack_mode = "auto",
+    })
+  end,
+},
+{
+  "zongben/proot.nvim",
+  config = function()
+    require("proot").setup({
+      events = {
+        detected = function(name, path)
+          local stack = require("navimark.stack")
+          for _, s in ipairs(stack.stacks) do
+             if s.root_dir == path then
+               return
+             end
+          end
+          stack.new_stack(name, path)
+          stack.next_stack()
+        end,
+      },
+    })
+  end
+}
+```
+
+With this config, whenever a new project is detected by proot, navimark will create a new stack with the project name and save its root directory.
+When switching between projects, navimark will automatically load the corresponding stack based on the current working directory (cwd).
+
+This combination makes it easy to manage bookmarks within each project.
+Even when switching between different repositories, you can quickly access the bookmarks that belong to that specific project.
