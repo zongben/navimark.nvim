@@ -11,7 +11,15 @@ M.init = function(try_save)
 
       mark.reload_buf_marks(bufnr, function(m)
         local extmark = vim.api.nvim_buf_get_extmark_by_id(bufnr, mark.ns_id, m.mark_id, {})
-        m.line = extmark[1] + 1
+
+        local new_line = extmark[1] + 1
+        local buf_line_count = vim.api.nvim_buf_line_count(bufnr)
+
+        if new_line > buf_line_count then
+          new_line = buf_line_count
+        end
+
+        m.line = new_line
       end)
       try_save()
     end,

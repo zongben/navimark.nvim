@@ -49,7 +49,6 @@ M.init = function(persist, stack_mode)
       M.stacks = loaded_stacks
     end
   end
-  loadstack(currnet_stack_index)
 
   autocmd.init(try_save)
 
@@ -61,12 +60,14 @@ M.init = function(persist, stack_mode)
           if stack.root_dir == cwd then
             currnet_stack_index = i
             loadstack(i)
-            break
+            return
           end
         end
       end,
     })
   end
+
+  loadstack(currnet_stack_index)
 end
 
 M.mark_toggle = function()
@@ -86,6 +87,38 @@ end
 
 M.delete_mark = function(pos)
   mark.mark_remove(pos)
+  try_save()
+end
+
+M.correct_marks = function(stack)
+  local cache = {}
+
+  for i = #stack.marks, 1, -1 do
+    local m = stack.marks[i]
+    if not vim.fn.filereadable(m.file) then
+      table.remove(stack.marks, i)
+    else
+      local buf_line_count
+
+      if cache[m.file] then
+        buf_line_count = cache[m.file]
+      else
+        local bufnr = vim.fn.bufadd(m.file)
+        buf_line_count = vim.api.nvim_buf_line_count(bufnr)
+
+        if buf_line_count == 0 then
+          buf_line_count = #vim.fn.readfile(m.file)
+        end
+
+        cache[m.file] = buf_line_count
+      end
+
+      if m.line > buf_line_count then
+        m.line = buf_line_count
+      end
+    end
+  end
+
   try_save()
 end
 

@@ -55,6 +55,7 @@ end
 
 local new_picker = function()
   local current_stack = stack.get_current_stack()
+  stack.correct_marks(current_stack)
   pickers
     .new({}, {
       prompt_title = current_stack.name,
