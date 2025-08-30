@@ -24,9 +24,13 @@ M.load = function(marks, ns_id)
   M.current_mark_index = 1
 end
 
-M.reload_buf_marks = function(bufnr)
+M.reload_buf_marks = function(bufnr, handler)
   for _, mark in ipairs(M.marks) do
-    if mark.file:lower() == vim.api.nvim_buf_get_name(bufnr):lower() then
+    if bufnr == vim.fn.bufadd(mark.file) then
+      if handler then
+        handler(mark)
+      end
+
       vim.api.nvim_buf_del_extmark(bufnr, M.ns_id, mark.mark_id)
       local id = vim.api.nvim_buf_set_extmark(bufnr, M.ns_id, mark.line - 1, 0, extmark_options)
       mark.mark_id = id

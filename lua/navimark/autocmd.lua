@@ -9,14 +9,10 @@ M.init = function(try_save)
     callback = function(args)
       local bufnr = args.buf
 
-      for _, m in ipairs(mark.marks) do
-        if bufnr == vim.fn.bufadd(m.file) then
-          local extmark = vim.api.nvim_buf_get_extmark_by_id(bufnr, mark.ns_id, m.mark_id, {})
-          m.line = extmark[1] + 1
-        end
-      end
-
-      mark.reload_buf_marks(bufnr)
+      mark.reload_buf_marks(bufnr, function(m)
+        local extmark = vim.api.nvim_buf_get_extmark_by_id(bufnr, mark.ns_id, m.mark_id, {})
+        m.line = extmark[1] + 1
+      end)
       try_save()
     end,
   })
