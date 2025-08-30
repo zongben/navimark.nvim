@@ -53,18 +53,24 @@ M.init = function(persist, stack_mode)
   autocmd.init(try_save)
 
   if stack_mode == "auto" then
+    local find_matched_stack = function()
+      local cwd = vim.fn.getcwd()
+      for i, stack in ipairs(M.stacks) do
+        if stack.root_dir == cwd then
+          currnet_stack_index = i
+          loadstack(i)
+          return
+        end
+      end
+    end
+
     vim.api.nvim_create_autocmd("DirChanged", {
       callback = function()
-        local cwd = vim.fn.getcwd()
-        for i, stack in ipairs(M.stacks) do
-          if stack.root_dir == cwd then
-            currnet_stack_index = i
-            loadstack(i)
-            return
-          end
-        end
+        find_matched_stack()
       end,
     })
+
+    find_matched_stack()
   end
 
   loadstack(currnet_stack_index)
