@@ -157,7 +157,7 @@ M.save_root_dir = function(path)
   end
   local stack = M.get_current_stack()
   stack.root_dir = cwd
-  vim.print(cwd)
+  vim.notify("[" .. stack.name .. "] RootDir set to: " .. cwd)
   try_save()
 end
 
