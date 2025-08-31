@@ -7,14 +7,20 @@ M.marks = {}
 M.ns_id = 0
 
 local group_name = "navimark_hl_group"
+local sign_text
 
-local extmark_options = {
-  sign_hl_group = group_name,
-  undo_restore = false,
-}
+local set_extmark = function(bufnr, line)
+  local extmark_options = {
+    sign_hl_group = group_name,
+    undo_restore = false,
+    sign_text = sign_text,
+  }
+
+  return vim.api.nvim_buf_set_extmark(bufnr, M.ns_id, line, 0, extmark_options)
+end
 
 M.init = function(sign_options)
-  extmark_options.sign_text = sign_options.text
+  sign_text = sign_options.text
   vim.api.nvim_set_hl(M.ns_id, group_name, { fg = sign_options.color })
 end
 
@@ -41,8 +47,8 @@ M.reload_buf_marks = function(bufnr, handler)
         table.remove(M.marks, i)
       else
         seen[key] = true
-        local id = vim.api.nvim_buf_set_extmark(bufnr, M.ns_id, mark.line - 1, 0, extmark_options)
-        mark.mark_id = id
+        local mark_id = set_extmark(bufnr, mark.line - 1)
+        mark.mark_id = mark_id
       end
     end
   end
@@ -70,7 +76,7 @@ M.mark_add = function(pos)
     end
   end
 
-  local mark_id = vim.api.nvim_buf_set_extmark(current_pos.bufnr, M.ns_id, current_pos.line - 1, 0, extmark_options)
+  local mark_id = set_extmark(current_pos.bufnr, current_pos.line - 1)
   table.insert(M.marks, {
     file = current_pos.file,
     line = current_pos.line,
