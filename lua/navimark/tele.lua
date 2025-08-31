@@ -28,16 +28,13 @@ local previewer = previewers.new_buffer_previewer({
   end,
 })
 
-local display_name = function(file, line)
-  return file .. ":" .. line
-end
-
 local function create_finder(current_stack)
   return finders.new_table({
     results = current_stack.marks,
     entry_maker = function(entry)
+      local title = (entry.title or "") .. ":"
       return {
-        display = display_name(entry.file, entry.line),
+        display = title .. entry.file .. ":" .. entry.line,
         value = entry,
         ordinal = entry.file .. entry.line,
       }
@@ -87,12 +84,21 @@ end
 M.delete_mark = function(prompt_bufnr)
   local selection = action_state.get_selected_entry()
   local pos = entry_to_pos(selection.value)
-  stack.delete_mark(pos)
+  stack.mark_remove(pos)
   refresh_picker(prompt_bufnr)
 end
 
 M.clear_marks = function(prompt_bufnr)
   stack.clear_marks()
+  refresh_picker(prompt_bufnr)
+end
+
+M.set_mark_title = function(prompt_bufnr)
+  local selection = action_state.get_selected_entry()
+  local title = vim.fn.input("Enter title for mark: ", selection.value.title or "")
+  local pos = entry_to_pos(selection.value)
+
+  stack.set_mark_title(title, pos)
   refresh_picker(prompt_bufnr)
 end
 

@@ -8,19 +8,32 @@ M.ns_id = 0
 
 local group_name = "navimark_hl_group"
 local sign_text
+local title_pos
 
-local set_extmark = function(bufnr, line)
+local set_extmark = function(bufnr, line, virt_text)
   local extmark_options = {
     sign_hl_group = group_name,
     undo_restore = false,
     sign_text = sign_text,
   }
 
+  if virt_text then
+    if vim.tbl_contains({ "eol", "eol_right_align", "right_align" }, title_pos) then
+      extmark_options.virt_text = { { virt_text, "Comment" } }
+      extmark_options.virt_text_pos = title_pos
+    elseif title_pos == "above" then
+      local indent = vim.api.nvim_buf_get_lines(bufnr, line, line + 1, false)[1]:match("^%s*") or ""
+      extmark_options.virt_lines = { { { indent .. virt_text, "Comment" } } }
+      extmark_options.virt_lines_above = true
+    end
+  end
+
   return vim.api.nvim_buf_set_extmark(bufnr, M.ns_id, line, 0, extmark_options)
 end
 
 M.init = function(sign_options)
   sign_text = sign_options.text
+  title_pos = sign_options.title_pos
   vim.api.nvim_set_hl(M.ns_id, group_name, { fg = sign_options.color })
 end
 
@@ -47,7 +60,7 @@ M.reload_buf_marks = function(bufnr, handler)
         table.remove(M.marks, i)
       else
         seen[key] = true
-        local mark_id = set_extmark(bufnr, mark.line - 1)
+        local mark_id = set_extmark(bufnr, mark.line - 1, mark.title)
         mark.mark_id = mark_id
       end
     end
@@ -59,6 +72,23 @@ M.clear_all_marks = function()
     local bufnr = vim.fn.bufadd(mark.file)
     if vim.api.nvim_buf_is_loaded(bufnr) then
       vim.api.nvim_buf_del_extmark(bufnr, M.ns_id, mark.mark_id)
+    end
+  end
+end
+
+M.set_mark_title = function(title, pos)
+  for _, mark in ipairs(M.marks) do
+    if mark.file == pos.file and mark.line == pos.line then
+      mark.title = title
+
+      if vim.api.nvim_buf_is_loaded(pos.bufnr) then
+        vim.api.nvim_buf_del_extmark(pos.bufnr, M.ns_id, mark.mark_id)
+        if mark.title == "" then
+          mark.title = nil
+        end
+        mark.mark_id = set_extmark(pos.bufnr, mark.line - 1, mark.title)
+      end
+      return
     end
   end
 end

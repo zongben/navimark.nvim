@@ -5,6 +5,7 @@ M.defaults = {
     base = {
       mark_toggle = "<leader>mm",
       mark_add = "<leader>ma",
+      mark_add_with_title = "<leader>mt",
       mark_remove = "<leader>mr",
       goto_next_mark = "]m",
       goto_prev_mark = "[m",
@@ -14,6 +15,8 @@ M.defaults = {
       n = {
         delete_mark = "d",
         clear_marks = "c",
+        set_mark_title = "t",
+
         new_stack = "N",
         next_stack = "<Tab>",
         prev_stack = "<S-Tab>",
@@ -26,6 +29,7 @@ M.defaults = {
   sign = {
     text = "",
     color = "#FF0000",
+    title_pos = "above",
   },
   persist = false,
   stack_mode = "manual",

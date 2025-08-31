@@ -23,6 +23,7 @@ M.base_init = function()
   local base = M.keymap.base
   map("n", base.mark_toggle, stack.mark_toggle)
   map("n", base.mark_add, stack.mark_add)
+  map("n", base.mark_add_with_title, stack.mark_add_with_title)
   map("n", base.mark_remove, stack.mark_remove)
   map("n", base.goto_next_mark, stack.goto_next_mark)
   map("n", base.goto_prev_mark, stack.goto_prev_mark)
@@ -41,6 +42,7 @@ M.tele_init = function()
     tele_map("n", telescope.n.delete_stack, tele.delete_stack)
     tele_map("n", telescope.n.clear_marks, tele.clear_marks)
     tele_map("n", telescope.n.open_all_marked_files, tele.open_all_marked_files)
+    tele_map("n", telescope.n.set_mark_title, tele.set_mark_title)
   end
 end
 

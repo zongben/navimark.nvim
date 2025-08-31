@@ -86,13 +86,20 @@ M.mark_add = function()
   try_save()
 end
 
-M.mark_remove = function()
-  mark.mark_remove(get_current_pos())
+M.mark_add_with_title = function()
+  local pos = get_current_pos()
+  local title = vim.fn.input("Enter title for mark: ")
+  mark.mark_add(pos)
+  M.set_mark_title(title, pos)
+end
+
+M.mark_remove = function(pos)
+  mark.mark_remove(pos or get_current_pos())
   try_save()
 end
 
-M.delete_mark = function(pos)
-  mark.mark_remove(pos)
+M.set_mark_title = function(title, pos)
+  mark.set_mark_title(title, pos or get_current_pos())
   try_save()
 end
 

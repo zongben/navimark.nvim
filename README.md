@@ -10,7 +10,8 @@ https://github.com/user-attachments/assets/4c0d3a0c-c911-40e9-8d0a-d70099a40e8c
 - Bookmarks are scoped by different stacks
 - Uses telescope to preview and navigate bookmarks
 - Allows bookmarks to be persisted
-- **(NEW)** When the cwd changes, if a stack has the same root_dir as the cwd, that stack will be loaded automatically
+- When the cwd changes, if a stack has the same root_dir as the cwd, that stack will be loaded automatically
+- **(NEW)** Bookmarks can have custom titles to help you remember the purpose of each bookmark
 
 ## Installation
 
@@ -40,6 +41,7 @@ The default configuration is as follows
     base = {
       mark_toggle = "<leader>mm",
       mark_add = "<leader>ma",
+      mark_add_with_title = "<leader>mt",
       mark_remove = "<leader>mr",
       goto_next_mark = "]m",
       goto_prev_mark = "[m",
@@ -49,6 +51,7 @@ The default configuration is as follows
       n = {
         delete_mark = "d",
         clear_marks = "c",
+        set_mark_title = "t",
         new_stack = "N",
         next_stack = "<Tab>",
         prev_stack = "<S-Tab>",
@@ -62,6 +65,8 @@ The default configuration is as follows
   sign = {
     text = "",
     color = "#FF0000",
+    --options: above || eol || eol_right_align || right_align
+    title_pos = "above"
   },
   --set to true to persist stacks and marks
   persist = false,
@@ -81,6 +86,7 @@ You can use the following APIs to customize your config
 local stack = require("navimark.stack")
 stack.mark_toggle()
 stack.mark_add()
+stack.mark_add_with_title()
 stack.mark_remove()
 stack.goto_next_mark()
 stack.goto_prev_mark()
