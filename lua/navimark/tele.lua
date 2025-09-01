@@ -62,6 +62,9 @@ local new_picker = function()
       attach_mappings = function(_, map)
         actions.select_default:replace(function(prompt_bufnr)
           local selection = action_state.get_selected_entry()
+          if not selection then
+            return false
+          end
           actions.close(prompt_bufnr)
           vim.api.nvim_command("edit " .. selection.value.file)
           vim.api.nvim_win_set_cursor(0, { selection.value.line, 0 })
