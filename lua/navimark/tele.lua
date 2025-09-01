@@ -32,7 +32,11 @@ local function create_finder(current_stack)
   return finders.new_table({
     results = current_stack.marks,
     entry_maker = function(entry)
-      local title = (entry.title or "") .. ":"
+      local title = ""
+      if entry.title then
+        title = entry.title .. ":"
+      end
+
       return {
         display = title .. entry.file .. ":" .. entry.line,
         value = entry,
