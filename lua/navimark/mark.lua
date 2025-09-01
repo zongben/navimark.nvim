@@ -93,39 +93,45 @@ M.set_mark_title = function(title, pos)
   end
 end
 
+M.get_mark_by_pos = function(pos)
+  for _, mark in ipairs(M.marks) do
+    if mark.file == pos.file and mark.line == pos.line then
+      return mark
+    end
+  end
+end
+
 M.mark_add = function(pos)
-  local current_pos = pos
-  if utils.is_buf_modifying(current_pos.bufnr) then
+  if utils.is_buf_modifying(pos.bufnr) then
     vim.notify("Can't add mark when file is modifying")
     return
   end
 
   for _, mark in ipairs(M.marks) do
-    if mark.file == current_pos.file and mark.line == current_pos.line then
+    if mark.file == pos.file and mark.line == pos.line then
       return
     end
   end
 
-  local mark_id = set_extmark(current_pos.bufnr, current_pos.line - 1)
+  local mark_id = set_extmark(pos.bufnr, pos.line - 1)
   table.insert(M.marks, {
-    file = current_pos.file,
-    line = current_pos.line,
+    file = pos.file,
+    line = pos.line,
     mark_id = mark_id,
   })
   M.current_mark_index = #M.marks
 end
 
 M.mark_remove = function(pos)
-  local current_pos = pos
-  if utils.is_buf_modifying(current_pos.bufnr) then
+  if utils.is_buf_modifying(pos.bufnr) then
     vim.notify("Can't remove mark when file is modifying")
     return
   end
 
   local removed_index = nil
   for i, mark in ipairs(M.marks) do
-    if mark.file == current_pos.file and mark.line == current_pos.line then
-      vim.api.nvim_buf_del_extmark(current_pos.bufnr, M.ns_id, mark.mark_id)
+    if mark.file == pos.file and mark.line == pos.line then
+      vim.api.nvim_buf_del_extmark(pos.bufnr, M.ns_id, mark.mark_id)
       table.remove(M.marks, i)
       removed_index = i
       break

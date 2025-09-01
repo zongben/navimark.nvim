@@ -83,8 +83,18 @@ end
 
 M.mark_add_with_title = function()
   local pos = get_current_pos()
-  local title = vim.fn.input("Enter title for mark: ")
-  mark.mark_add(pos)
+  local m = mark.get_mark_by_pos(pos)
+
+  local text = ""
+  if m then
+    text = m.title or ""
+  end
+  local title = vim.fn.input("Enter title for mark: ", text)
+
+  if not m then
+    mark.mark_add(pos)
+  end
+
   M.set_mark_title(title, pos)
 end
 
