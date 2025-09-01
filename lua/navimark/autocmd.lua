@@ -40,4 +40,12 @@ M.init = function(try_save)
   })
 end
 
+M.dir_changed = function(handler)
+  vim.api.nvim_create_autocmd("DirChanged", {
+    callback = function()
+      handler()
+    end,
+  })
+end
+
 return M

@@ -64,12 +64,7 @@ M.init = function(persist, stack_mode)
       end
     end
 
-    vim.api.nvim_create_autocmd("DirChanged", {
-      callback = function()
-        find_matched_stack()
-      end,
-    })
-
+    autocmd.dir_changed(find_matched_stack)
     find_matched_stack()
   end
 
