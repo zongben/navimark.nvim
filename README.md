@@ -74,7 +74,7 @@ The default configuration is as follows
   --options: manual || auto
   --auto: When the cwd changes, if a stack has the same root_dir as the cwd, that stack will be loaded automatically
   --manual: manage stacks manually
-  stack_mode = "manual",
+  stack_mode = "auto",
 }
 ```
 
