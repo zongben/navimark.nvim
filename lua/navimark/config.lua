@@ -32,7 +32,7 @@ M.defaults = {
     title_pos = "above",
   },
   persist = false,
-  stack_mode = "manual",
+  stack_mode = "auto",
 }
 
 return M
