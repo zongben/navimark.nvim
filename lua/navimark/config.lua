@@ -17,9 +17,9 @@ M.defaults = {
         clear_marks = "c",
         set_mark_title = "t",
 
-        new_stack = "N",
         next_stack = "<Tab>",
         prev_stack = "<S-Tab>",
+        new_stack = "N",
         rename_stack = "R",
         delete_stack = "D",
         open_all_marked_files = "<C-o>",
@@ -31,7 +31,7 @@ M.defaults = {
     color = "#FF0000",
     title_pos = "above",
   },
-  persist = false,
+  persist = true,
   stack_mode = "auto",
 }
 

@@ -52,9 +52,9 @@ The default configuration is as follows
         delete_mark = "d",
         clear_marks = "c",
         set_mark_title = "t",
-        new_stack = "N",
         next_stack = "<Tab>",
         prev_stack = "<S-Tab>",
+        new_stack = "N",
         rename_stack = "R",
         delete_stack = "D",
         -- open all marked files in current stack
@@ -69,7 +69,7 @@ The default configuration is as follows
     title_pos = "above"
   },
   --set to true to persist stacks and marks
-  persist = false,
+  persist = true,
 
   --options: manual || auto
   --auto: When the cwd changes, if a stack has the same root_dir as the cwd, that stack will be loaded automatically
