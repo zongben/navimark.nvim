@@ -17,7 +17,7 @@ local set_extmark = function(bufnr, line, virt_text)
     sign_text = sign_text,
   }
 
-  if virt_text then
+  if virt_text and title_pos ~= "none" then
     if vim.tbl_contains({ "eol", "eol_right_align", "right_align" }, title_pos) then
       extmark_options.virt_text = { { virt_text, "Comment" } }
       extmark_options.virt_text_pos = title_pos

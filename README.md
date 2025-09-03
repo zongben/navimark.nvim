@@ -65,7 +65,9 @@ The default configuration is as follows
   sign = {
     text = "",
     color = "#FF0000",
-    --options: above || eol || eol_right_align || right_align
+    --options: above || eol || eol_right_align || right_align || none
+    -- If set to 'none', you can still assign a title to a mark.
+    -- The title will only appear in Telescope but will not be shown as virt_text in the editor.
     title_pos = "above"
   },
   --set to true to persist stacks and marks
