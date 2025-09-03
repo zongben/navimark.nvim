@@ -8,7 +8,7 @@ M.ns_id = 0
 
 local group_name = "navimark_hl_group"
 local sign_text
-local title_pos
+local title_position
 
 local set_extmark = function(bufnr, line, virt_text)
   local extmark_options = {
@@ -17,11 +17,11 @@ local set_extmark = function(bufnr, line, virt_text)
     sign_text = sign_text,
   }
 
-  if virt_text and title_pos ~= "none" then
-    if vim.tbl_contains({ "eol", "eol_right_align", "right_align" }, title_pos) then
+  if virt_text and title_position ~= "none" then
+    if vim.tbl_contains({ "eol", "eol_right_align", "right_align" }, title_position) then
       extmark_options.virt_text = { { virt_text, "Comment" } }
-      extmark_options.virt_text_pos = title_pos
-    elseif title_pos == "above" then
+      extmark_options.virt_text_pos = title_position
+    elseif title_position == "above" then
       local indent = vim.api.nvim_buf_get_lines(bufnr, line, line + 1, false)[1]:match("^%s*") or ""
       extmark_options.virt_lines = { { { indent .. virt_text, "Comment" } } }
       extmark_options.virt_lines_above = true
@@ -33,7 +33,7 @@ end
 
 M.init = function(sign_options)
   sign_text = sign_options.text
-  title_pos = sign_options.title_pos
+  title_position = sign_options.title_position
   vim.api.nvim_set_hl(M.ns_id, group_name, { fg = sign_options.color })
 end
 

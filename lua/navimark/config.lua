@@ -29,7 +29,7 @@ M.defaults = {
   sign = {
     text = "",
     color = "#FF0000",
-    title_pos = "above",
+    title_position = "above",
   },
   persist = true,
   stack_mode = "auto",

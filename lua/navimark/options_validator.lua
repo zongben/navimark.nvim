@@ -5,7 +5,7 @@ M.exec = function(options)
     error("Invalid stack_mode. Must be 'auto' or 'manual'")
   end
 
-  if not vim.tbl_contains({ "above", "eol", "eol_right_align", "right_align", "none" }, options.sign.title_pos) then
+  if not vim.tbl_contains({ "above", "eol", "eol_right_align", "right_align", "none" }, options.sign.title_position) then
     error("Invalid sign.title_pos. Must be 'above', 'eol', 'eol_right_align', 'right_align' or 'none'.")
   end
 end
