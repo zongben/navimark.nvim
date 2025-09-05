@@ -114,7 +114,19 @@ tele.open_mark_picker()
 I highly recommend using my other plugin [proot.nvim](https://github.com/zongben/proot.nvim)
 
 ```lua
-{
+local try_create_stack = function(name, path)
+  local stack = require("navimark.stack")
+  for _, s in ipairs(stack.stacks) do
+    if s.root_dir == path then
+      return
+    end
+  end
+
+  stack.new_stack(name, path)
+  stack.next_stack()
+end
+
+return {
   "zongben/navimark.nvim",
   config = function()
     require("navimark").setup({
@@ -129,22 +141,18 @@ I highly recommend using my other plugin [proot.nvim](https://github.com/zongben
     require("proot").setup({
       events = {
         detected = function(name, path)
-          local stack = require("navimark.stack")
-          for _, s in ipairs(stack.stacks) do
-             if s.root_dir == path then
-               return
-             end
-          end
-          stack.new_stack(name, path)
-          stack.next_stack()
+          try_create_stack(name, path)
         end,
+        entered = function(name, path)
+          try_create_stack(name, path)
+        end
       },
     })
   end
 }
 ```
 
-With this config, whenever a new project is detected by proot, navimark will create a new stack with the project name and save its root directory.
+With this config, whenever a new project is detected by proot or having exsisted projects, navimark will create a new stack with the project name and save its root directory.
 When switching between projects, navimark will automatically load the corresponding stack based on the current working directory (cwd).
 
 This combination makes it easy to manage bookmarks within each project.
