@@ -2,13 +2,80 @@ local utils = require("navimark.utils")
 
 local M = {}
 
-M.current_mark_index = 1
 M.marks = {}
 M.ns_id = 0
 
 local group_name = "navimark_hl_group"
 local sign_text
 local title_position
+
+local sorted_marks
+local sort_marks_by_files = function(file)
+  local function sort(f)
+    sorted_marks[f] = {}
+    for i, m in ipairs(M.marks) do
+      if m.file == f then
+        table.insert(sorted_marks[f], { line = m.line, index = i })
+      end
+    end
+    table.sort(sorted_marks[f], function(a, b)
+      return a.line < b.line
+    end)
+  end
+
+  if file then
+    sort(file)
+  else
+    sorted_marks = {}
+    local seen = {}
+    for _, m in ipairs(M.marks) do
+      if not seen[m.file] then
+        seen[m.file] = true
+        sort(m.file)
+      end
+    end
+  end
+end
+
+local goto_mark = function(current_mark_index)
+  local mark = M.marks[current_mark_index]
+  if not mark then
+    vim.notify("BookMark not found")
+    return
+  end
+
+  if vim.fn.filereadable(mark.file) ~= 1 then
+    vim.notify("File not found")
+    return
+  end
+
+  vim.api.nvim_win_set_cursor(0, { mark.line, 0 })
+end
+
+local goto_mark_in_file = function(pos, direction)
+  local marks = sorted_marks[pos.file]
+  if not marks or #marks == 0 then
+    return
+  end
+
+  if direction == "next" then
+    for _, m in ipairs(marks) do
+      if m.line > pos.line then
+        goto_mark(m.index)
+        return
+      end
+    end
+    goto_mark(marks[1].index)
+  elseif direction == "prev" then
+    for i = #marks, 1, -1 do
+      if marks[i].line < pos.line then
+        goto_mark(marks[i].index)
+        return
+      end
+    end
+    goto_mark(marks[#marks].index)
+  end
+end
 
 local set_extmark = function(bufnr, line, virt_text)
   local extmark_options = {
@@ -40,7 +107,7 @@ end
 M.load = function(marks, ns_id)
   M.marks = marks
   M.ns_id = ns_id
-  M.current_mark_index = 1
+  sort_marks_by_files()
 end
 
 M.reload_buf_marks = function(bufnr, handler)
@@ -67,7 +134,7 @@ M.reload_buf_marks = function(bufnr, handler)
   end
 end
 
-M.clear_all_marks = function()
+M.clear_all_mark_signs = function()
   for _, mark in ipairs(M.marks) do
     local bufnr = vim.fn.bufadd(mark.file)
     if vim.api.nvim_buf_is_loaded(bufnr) then
@@ -120,6 +187,8 @@ M.mark_add = function(pos)
     mark_id = mark_id,
   })
   M.current_mark_index = #M.marks
+
+  sort_marks_by_files(pos.file)
 end
 
 M.mark_remove = function(pos)
@@ -138,6 +207,8 @@ M.mark_remove = function(pos)
     end
   end
   M.current_mark_index = removed_index or M.current_mark_index
+
+  sort_marks_by_files(pos.file)
 end
 
 M.mark_toggle = function(pos)
@@ -150,20 +221,12 @@ M.mark_toggle = function(pos)
   M.mark_add(pos)
 end
 
-M.goto_mark = function(current_mark_index)
-  local mark = M.marks[current_mark_index]
-  if not mark then
-    vim.notify("BookMark not found")
-    return
-  end
+M.goto_next_mark = function(pos)
+  goto_mark_in_file(pos, "next")
+end
 
-  if vim.fn.filereadable(mark.file) ~= 1 then
-    vim.notify("File not found")
-    return
-  end
-
-  vim.api.nvim_command("edit " .. mark.file)
-  vim.api.nvim_win_set_cursor(0, { mark.line, 0 })
+M.goto_prev_mark = function(pos)
+  goto_mark_in_file(pos, "prev")
 end
 
 return M

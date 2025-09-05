@@ -27,7 +27,7 @@ local get_ns_id = function()
 end
 
 local loadstack = function(index)
-  mark.clear_all_marks()
+  mark.clear_all_mark_signs()
   currnet_stack_index = index
   mark.load(M.stacks[currnet_stack_index].marks, get_ns_id())
 end
@@ -145,19 +145,13 @@ M.get_current_stack = function()
 end
 
 M.goto_next_mark = function()
-  mark.current_mark_index = mark.current_mark_index + 1
-  if mark.current_mark_index > #mark.marks then
-    mark.current_mark_index = 1
-  end
-  mark.goto_mark(mark.current_mark_index)
+  local pos = get_current_pos()
+  mark.goto_next_mark(pos)
 end
 
 M.goto_prev_mark = function()
-  mark.current_mark_index = mark.current_mark_index - 1
-  if mark.current_mark_index < 1 then
-    mark.current_mark_index = #mark.marks
-  end
-  mark.goto_mark(mark.current_mark_index)
+  local pos = get_current_pos()
+  mark.goto_prev_mark(pos)
 end
 
 M.save_root_dir = function(path)

@@ -43,8 +43,11 @@ The default configuration is as follows
       mark_add = "<leader>ma",
       mark_add_with_title = "<leader>mt",
       mark_remove = "<leader>mr",
+
+      -- this only goes to the next/previous mark in the same file
       goto_next_mark = "]m",
       goto_prev_mark = "[m",
+
       open_mark_picker = "<leader>fm",
     },
     telescope = {
