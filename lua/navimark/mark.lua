@@ -186,7 +186,6 @@ M.mark_add = function(pos)
     line = pos.line,
     mark_id = mark_id,
   })
-  M.current_mark_index = #M.marks
 
   sort_marks_by_files(pos.file)
 end
@@ -197,16 +196,13 @@ M.mark_remove = function(pos)
     return
   end
 
-  local removed_index = nil
   for i, mark in ipairs(M.marks) do
     if mark.file == pos.file and mark.line == pos.line then
       vim.api.nvim_buf_del_extmark(pos.bufnr, M.ns_id, mark.mark_id)
       table.remove(M.marks, i)
-      removed_index = i
       break
     end
   end
-  M.current_mark_index = removed_index or M.current_mark_index
 
   sort_marks_by_files(pos.file)
 end
