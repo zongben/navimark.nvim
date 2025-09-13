@@ -114,18 +114,6 @@ tele.open_mark_picker()
 I highly recommend using my other plugin [proot.nvim](https://github.com/zongben/proot.nvim)
 
 ```lua
-local try_create_stack = function(name, path)
-  local stack = require("navimark.stack")
-  for _, s in ipairs(stack.stacks) do
-    if s.root_dir == path then
-      return
-    end
-  end
-
-  stack.new_stack(name, path)
-  stack.next_stack()
-end
-
 return {
   "zongben/navimark.nvim",
   config = function()
@@ -138,6 +126,18 @@ return {
 {
   "zongben/proot.nvim",
   config = function()
+    local try_create_stack = function(name, path)
+      local stack = require("navimark.stack")
+      for _, s in ipairs(stack.stacks) do
+        if s.root_dir == path then
+          return
+        end
+      end
+
+      stack.new_stack(name, path)
+      stack.next_stack()
+    end
+
     require("proot").setup({
       events = {
         detected = function(name, path)
