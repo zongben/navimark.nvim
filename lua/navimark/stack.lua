@@ -113,7 +113,7 @@ M.correct_marks = function(stack)
 
   for i = #stack.marks, 1, -1 do
     local m = stack.marks[i]
-    if not vim.fn.filereadable(m.file) then
+    if vim.fn.filereadable(m.file) == 0 then
       table.remove(stack.marks, i)
     else
       local buf_line_count
